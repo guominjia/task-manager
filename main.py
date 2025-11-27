@@ -48,7 +48,7 @@ def render_quadrant(urgency_val, importance_val, title, description, header_colo
     # 使用社区组件 colored_header（如果没有安装，可以注释掉并使用 st.subheader）
     # colored_header(label=title, description=description, color_name=header_color)
     st.subheader(f"{emoji} {title}")
-    st.markdown(f"*{description}*")
+    st.markdown(f"*{description}*\n\n---")
     
     # 过滤出当前象限的未完成任务
     tasks_to_render = [
@@ -64,7 +64,7 @@ def render_quadrant(urgency_val, importance_val, title, description, header_colo
         if task['urgency'] == urgency_val and task['importance'] == importance_val and task['completed']
     ]
 
-# **待处理任务渲染（紧凑模式）**
+    # **待处理任务渲染（紧凑模式）**
     if tasks_to_render:
         st.caption("**待处理任务**")
 
