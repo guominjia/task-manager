@@ -45,10 +45,7 @@ def toggle_complete(task_id):
 
 # --- 辅助函数：根据象限和状态过滤并渲染任务（新增颜色编码） ---
 def render_quadrant(urgency_val, importance_val, title, description, header_color, emoji):
-    # 使用社区组件 colored_header（如果没有安装，可以注释掉并使用 st.subheader）
-    # colored_header(label=title, description=description, color_name=header_color)
-    st.subheader(f"{emoji} {title}")
-    st.markdown(f"*{description}*\n\n---")
+    colored_header(label=f"{emoji} {title}", description=description, color_name=header_color)
     
     # 过滤出当前象限的未完成任务
     tasks_to_render = [
