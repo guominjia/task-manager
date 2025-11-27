@@ -219,4 +219,4 @@ with col2:
 st.markdown("---")
 st.subheader("📚 所有任务详情（数据表）")
 df_tasks = pd.DataFrame(st.session_state['tasks'])
-st.dataframe(df_tasks, use_container_width=True)
+st.dataframe(df_tasks, width='stretch')
