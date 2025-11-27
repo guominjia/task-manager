@@ -64,47 +64,79 @@ def render_quadrant(urgency_val, importance_val, title, description, header_colo
         if task['urgency'] == urgency_val and task['importance'] == importance_val and task['completed']
     ]
 
-    # **未完成任务渲染（带操作按钮）**
+# **待处理任务渲染（紧凑模式）**
     if tasks_to_render:
-        st.markdown("---")
         st.caption("**待处理任务**")
+
+        # 定义布局：名称(较宽)、截止日期(中等)、完成按钮(窄)、删除按钮(窄)
+        # 调整列宽比例 5:2:1:1
         for task in tasks_to_render:
+            # 使用更小的列宽比例，并移除分隔符
+            col_name, col_date, col_comp, col_del = st.columns([5, 2, 1, 1], gap="small")
+            
             # 颜色编码 (I: 红色, II: 绿色, III: 黄色, IV: 蓝色)
             text_color = "red" if header_color == "red-70" else \
                          "green" if header_color == "green-70" else \
                          "orange" if header_color == "yellow-70" else \
                          "blue"
+
+            # 1. 任务名称 (Col 1)
+            with col_name:
+                st.markdown(
+                    f'<span style="color:{text_color};">**{task["name"]}**</span>',
+                    unsafe_allow_html=True
+                )
             
-            # 使用 HTML 和 Markdown 混合实现颜色编码
-            st.markdown(
-                f'<span style="color:{text_color};">**{task["name"]}**</span> | 截止日期: {task["due_date"]}', 
-                unsafe_allow_html=True
-            )
+            # 2. 截止日期 (Col 2)
+            with col_date:
+                st.markdown(f'*{task["due_date"]}*')
             
-            # 操作按钮放在一列中
-            col_comp, col_del = st.columns([1, 1], gap="small")
+            # 3. 标记完成按钮 (Col 3) - 最小化标签
             with col_comp:
-                st.button("✅ 标记完成", key=f"comp_{task['id']}", on_click=toggle_complete, args=(task['id'],))
+                st.button("✅", 
+                          key=f"comp_{task['id']}", 
+                          on_click=toggle_complete, 
+                          args=(task['id'],), 
+                          help="标记完成")
+            
+            # 4. 删除按钮 (Col 4) - 最小化标签
             with col_del:
-                st.button("🗑️ 删除", key=f"del_{task['id']}", on_click=delete_task, args=(task['id'],))
-            st.markdown("---")
+                st.button("🗑️", 
+                          key=f"del_{task['id']}", 
+                          on_click=delete_task, 
+                          args=(task['id'],),
+                          help="删除任务")
+            
+            # **移除 st.markdown("---")，实现紧凑列表**
+            
     else:
         st.info("当前象限没有待处理任务。")
         
-    # **已完成任务渲染（带操作按钮）**
+    # **已完成任务渲染（使用 Expander 收纳，同样使用最小化按钮）**
     if completed_tasks:
         st.caption("**已完成任务**")
         with st.expander("点击查看已完成任务"):
+            # 重新使用紧凑的列布局
             for task in completed_tasks:
-                st.markdown(f'~~{task["name"]}~~ (于 {task["due_date"]} 截止)')
+                col_name, col_uncomp, col_del = st.columns([6, 1, 1], gap="small")
+
+                with col_name:
+                    # 使用 HTML 标记删除线，并添加截止日期
+                    st.markdown(f'~~{task["name"]}~~', unsafe_allow_html=True)
                 
-                # 操作按钮放在一列中
-                col_uncomp, col_del = st.columns([1, 1], gap="small")
                 with col_uncomp:
-                    st.button("🔄 取消完成", key=f"uncomp_{task['id']}", on_click=toggle_complete, args=(task['id'],))
+                    st.button("🔄", 
+                              key=f"uncomp_{task['id']}", 
+                              on_click=toggle_complete, 
+                              args=(task['id'],), 
+                              help="取消完成")
                 with col_del:
-                    st.button("🗑️ 删除", key=f"del_comp_{task['id']}", on_click=delete_task, args=(task['id'],))
-            st.markdown("---")
+                    st.button("🗑️", 
+                              key=f"del_comp_{task['id']}", 
+                              on_click=delete_task, 
+                              args=(task['id'],),
+                              help="删除任务")
+            # 移除分隔符
 
 
 # --- 2. 页面布局 ---
